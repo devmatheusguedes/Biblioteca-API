@@ -1,0 +1,22 @@
+CREATE TABLE livro(
+	id UUID PRIMARY KEY NOT NULL,
+	nome VARCHAR(100) NOT NULL,
+	data_nascimento DATE NOT NULL,
+	nacionalidade VARCHAR(50) NOT NULL
+);
+
+ALTER TABLE livro RENAME TO autor;
+
+CREATE TABLE livro(
+	id UUID PRIMARY KEY NOT NULL,
+	isbn VARCHAR(20) NOT NULL,
+	titulo VARCHAR(150) NOT NULL,
+	data_publicacao DATE NOT NULL,
+	genero VARCHAR(30) NOT NULL,
+	preco NUMERIC(18,2),
+	id_autor UUID NOT NULL REFERENCES autor(id),
+	CONSTRAINT chk_genero CHECK (genero in ('FICACAO', 'FANTASIA', 'CIENCIA', 'BIOGRAFIA',
+	'ROMANCE', 'MISTERIO'))
+);
+
+SELECT * FROM autor, livro;

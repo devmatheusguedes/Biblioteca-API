@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: libraryapi
+  datasource:
+    url: jdbc:postgresql://127.0.0.1:25432/library
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  main:
+    allow-bean-definition-overriding: true
+    # não é recomendado usar o ddl na aplicação comercial
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update  # gerar as tabelas automaticamente ou atualizar
