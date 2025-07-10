@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "autor", schema = "public")
-//@Data
+@Data
 @ToString(exclude = "livros")
 public class Autor {
     @Id
@@ -72,6 +72,16 @@ public class Autor {
 
     public void setLivros(List<Livro> livros) {
         this.livros = livros;
+    }
+
+    @Override
+    public String toString() {
+        return "Autor{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", dataNascimento=" + dataNascimento +
+                ", nacionalidade='" + nacionalidade + '\'' +
+                '}';
     }
 }
 

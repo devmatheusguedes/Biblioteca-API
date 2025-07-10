@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "livro")
-//@Data //contém todos os metodos padrão de uma classe do tipo entidade/modelo
+@Data //contém todos os metodos padrão de uma classe do tipo entidade/modelo
 @ToString(exclude = "autor")
 public class Livro {
     @Id
@@ -98,5 +98,16 @@ public class Livro {
 
     public void setAutor(Autor autor) {
         this.autor = autor;
+    }
+
+    @Override
+    public String toString() {
+        return "Livro{" +
+                "id=" + id +
+                ", isbn='" + isbn + '\'' +
+                ", titulo='" + titulo + '\'' +
+                ", dataPublicacao=" + dataPublicacao +
+                ", genero=" + genero +
+                ", preco=" + preco;
     }
 }
