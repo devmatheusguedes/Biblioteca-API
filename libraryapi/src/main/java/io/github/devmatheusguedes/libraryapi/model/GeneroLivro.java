@@ -1,7 +1,7 @@
 package io.github.devmatheusguedes.libraryapi.model;
 
 public enum GeneroLivro {
-    FICACAO,
+    FICCAO,
     FANTASIA,
     CIENCIA,
     BIOGRAFIA,

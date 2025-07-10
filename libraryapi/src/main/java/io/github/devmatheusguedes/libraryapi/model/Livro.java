@@ -2,6 +2,7 @@ package io.github.devmatheusguedes.libraryapi.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -9,7 +10,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "livro")
-@Data //contém todos os metodos padrão de uma classe do tipo entidade/modelo
+//@Data //contém todos os metodos padrão de uma classe do tipo entidade/modelo
+@ToString(exclude = "autor")
 public class Livro {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,7 +34,13 @@ public class Livro {
     @Column(name = "preco", precision =18, scale = 2)
     private BigDecimal preco;
 
-    @ManyToOne // muitos livros para um autor
+    @ManyToOne(//cascade = CascadeType.ALL
+            fetch = FetchType.LAZY // o lay faz com que a entidade livro não carregue os dados do autor
+             ) // muitos livros para um autor
+    // O atributo Cascade é usado para relações entre tabelas.
+    // o cascade All permite que a tabela que depende de outra tabela,
+    // possa criar, remover e atualizar a tabela que ela esteja dependeente de forma que não preise de
+    // código explicito.
     @JoinColumn(name = "id_autor") // anotação especifica para mapeamento de relações no lugar do @Column
     private Autor autor;
 

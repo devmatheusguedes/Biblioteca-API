@@ -13,8 +13,8 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "autor", schema = "public")
-@Data
-@ToString
+//@Data
+@ToString(exclude = "livros")
 public class Autor {
     @Id
     @Column(name = "id")
@@ -30,7 +30,7 @@ public class Autor {
     private String nacionalidade;
 
     // um autor para muitos livros
-    @OneToMany(mappedBy = "autor") // anotação para dizer ao spring que o campo relacionado em livros é o campo autor
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL) // anotação para dizer ao spring que o campo relacionado em livros é o campo autor
     // mapedBy também serve para serve para dizer ao spring que este campo não é uma coluna no banco de dados
     private List<Livro> livros;
 
