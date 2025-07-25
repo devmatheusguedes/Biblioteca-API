@@ -12,6 +12,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update  # gerar as tabelas automaticamente ou atualizar
+#      ddl-auto: update  # gerar as tabelas automaticamente ou atualizar
+      ddl-auto: none  # não gerar as tabelas automaticamente
     properties:
       hibernate.format_sql: true

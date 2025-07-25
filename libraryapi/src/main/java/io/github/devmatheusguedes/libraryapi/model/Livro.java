@@ -3,15 +3,19 @@ package io.github.devmatheusguedes.libraryapi.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "livro")
 @Data //contém todos os metodos padrão de uma classe do tipo entidade/modelo
-@ToString(exclude = "autor")
+@EntityListeners(AuditingEntityListener.class)
 public class Livro {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,7 +25,7 @@ public class Livro {
     @Column(name = "isbn", length = 20, nullable = false)
     private String isbn;
 
-    @Column(name = "livro", length = 150, nullable = false)
+    @Column(name = "titulo", length = 150, nullable = false)
     private String titulo;
 
     @Column(name = "data_publicacao", nullable = false)
@@ -34,7 +38,7 @@ public class Livro {
     @Column(name = "preco", precision =18, scale = 2)
     private BigDecimal preco;
 
-    @ManyToOne(//cascade = CascadeType.ALL
+    @ManyToOne(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY // o lay faz com que a entidade livro não carregue os dados do autor
              ) // muitos livros para um autor
     // O atributo Cascade é usado para relações entre tabelas.
@@ -44,6 +48,16 @@ public class Livro {
     @JoinColumn(name = "id_autor") // anotação especifica para mapeamento de relações no lugar do @Column
     private Autor autor;
 
+    @Column(name = "data_cadastro")
+    @CreatedDate
+    private LocalDateTime dataCadastro;
+
+    @Column(name = "data_atualizacao")
+    @LastModifiedDate
+    private LocalDateTime dataAtualizacao;
+
+    @Column(name="id_usuario")
+    private UUID usuario;
     public UUID getId() {
         return id;
     }
@@ -98,6 +112,30 @@ public class Livro {
 
     public void setAutor(Autor autor) {
         this.autor = autor;
+    }
+
+    public LocalDateTime getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(LocalDateTime dataCadastro) {
+        this.dataCadastro = dataCadastro;
+    }
+
+    public LocalDateTime getDataAtualizacao() {
+        return dataAtualizacao;
+    }
+
+    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
+    }
+
+    public UUID getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(UUID usuario) {
+        this.usuario = usuario;
     }
 
     @Override

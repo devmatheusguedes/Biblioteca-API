@@ -4,9 +4,13 @@ import io.github.devmatheusguedes.libraryapi.model.Autor;
 import io.github.devmatheusguedes.libraryapi.model.GeneroLivro;
 import io.github.devmatheusguedes.libraryapi.model.Livro;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,4 +56,31 @@ public interface LivroRepository extends JpaRepository<Livro, UUID> {
             order by l.genero
             """)
     List<String> listarGenerosAutoresBrsilerios();
+
+    @Query("""
+            select l
+            from Livro l
+            where l.genero = :genero
+            order by :ordenacao
+            """)
+    List<Livro> findByGrnero(@Param("genero") GeneroLivro generoLivro,
+                             @Param("ordenacao") String ordenarPor);
+
+    @Query("""
+            select l
+            from Livro l
+            where l.titulo = ?1 And l.preco = ?2
+            order by l.titulo
+            """)
+    List<Livro> findByTituloAndPrecoPosicionalParam(String titulo, BigDecimal preco);
+
+    @Modifying
+    @Transactional // modifying e transactional são usadas para operações de escrita
+    @Query("delete from Livro where genero = ?1")
+    void deleteByGenero(GeneroLivro generoLivro);
+
+    @Modifying
+    @Transactional
+    @Query("update Livro set dataPublicacao = ?1")
+    void updateByDataPublicacao(LocalDate novaData);
 }

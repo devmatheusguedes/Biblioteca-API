@@ -152,4 +152,6 @@ public class AutorRepositoryTeste {
         autor.setLivros(livrosLista);
         autor.getLivros().forEach(System.out::println);
     }
+
+
 }

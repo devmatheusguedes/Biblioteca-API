@@ -43,17 +43,17 @@ public class LivroRepositoryTest {
     }
     @Test
     void salvarCascadeTeste(){
+        Autor autor = new Autor();
+        autor.setNome("César Duarte");
+        autor.setNacionalidade("Brasileiro");
+        autor.setDataNascimento(LocalDate.of(2000, 3, 10));
+
         Livro livro = new Livro();
         livro.setGenero(GeneroLivro.CIENCIA);
         livro.setIsbn("34w56-0558");
         livro.setPreco(BigDecimal.valueOf(100));
         livro.setTitulo("House star");
         livro.setDataPublicacao(LocalDate.of(2020, 4, 6));
-
-        Autor autor = new Autor();
-        autor.setNome("César Duarte");
-        autor.setNacionalidade("Brasileiro");
-        autor.setDataNascimento(LocalDate.of(2000, 3, 10));
         livro.setAutor(autor);
 
         livroRepository.save(livro);
@@ -137,5 +137,28 @@ public class LivroRepositoryTest {
         List<String> autors = livroRepository.listarGenerosAutoresBrsilerios();
         autors.forEach(System.out::println);
     }
+
+    @Test
+    void listarPeloGeneroQueryParam(){
+        var listaDeLivros = livroRepository.findByGrnero(GeneroLivro.CIENCIA, "dataPublicacao");
+        listaDeLivros.forEach(System.out::println);
+    }
+
+    @Test
+    void pesquisarPorTituloAndprecoPosisionalParam(){
+        var livros = livroRepository.findByTituloAndPrecoPosicionalParam("estrada sem forma",
+                new BigDecimal(500));
+        livros.forEach(System.out::println);
+    }
+    @Test
+    void deletarPorGnero(){
+        livroRepository.deleteByGenero(GeneroLivro.FANTASIA);
+    }
+
+    @Test
+    void updateDataPublicacao(){
+        livroRepository.updateByDataPublicacao(LocalDate.of(2000, 4, 3));
+    }
+
 
 }
