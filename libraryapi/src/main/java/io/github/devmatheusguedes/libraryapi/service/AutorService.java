@@ -1,5 +1,6 @@
 package io.github.devmatheusguedes.libraryapi.service;
 
+import io.github.devmatheusguedes.libraryapi.controller.dto.AutorDTO;
 import io.github.devmatheusguedes.libraryapi.model.Autor;
 import io.github.devmatheusguedes.libraryapi.repository.AutorRepository;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,13 @@ public class AutorService {
 
     public void deletar(UUID id){
         autorRepository.deleteById(id);
+    }
+
+    public void atualizar(Autor autor){
+        if (autor.getId() == null){
+            throw new IllegalArgumentException("O autor precisa estar cadastrado para atualizar.");
+        }
+        autorRepository.save(autor);
     }
 
     public List<Autor> filtar(String nome, String nacionalidade){

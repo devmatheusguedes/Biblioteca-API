@@ -69,7 +69,7 @@ public class AutorController {
     }
 
     @GetMapping
-    private ResponseEntity<List<AutorDTO>> filtrar(
+    public ResponseEntity<List<AutorDTO>> filtrar(
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "nacionalidade", required = false) String nacionalidade){
         List<Autor> autores = autorService.filtar(nome, nacionalidade);
@@ -81,5 +81,22 @@ public class AutorController {
                         autor.getNacionalidade()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(listAutotDTO);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<Void> atualizar(
+            @PathVariable String id, @RequestBody AutorDTO autorDTO){
+        var idAutor = UUID.fromString(id);
+        Optional<Autor> autorOptional = autorService.obterPorId(idAutor);
+        if (autorOptional.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        var autor = autorOptional.get();
+        autor.setNome(autorDTO.nome());
+        autor.setNacionalidade(autorDTO.nacionalidade());
+        autor.setDataNascimento(autorDTO.dataNascimento());
+
+        autorService.atualizar(autor);
+        return ResponseEntity.noContent().build();
     }
 }
