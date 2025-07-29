@@ -1,6 +1,8 @@
 package io.github.devmatheusguedes.libraryapi.controller;
 
 import io.github.devmatheusguedes.libraryapi.controller.dto.AutorDTO;
+import io.github.devmatheusguedes.libraryapi.controller.dto.ErroResposta;
+import io.github.devmatheusguedes.libraryapi.exepcion.RegistroDuplicadoExcepcion;
 import io.github.devmatheusguedes.libraryapi.model.Autor;
 import io.github.devmatheusguedes.libraryapi.model.Livro;
 import io.github.devmatheusguedes.libraryapi.service.AutorService;
@@ -12,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -30,16 +33,23 @@ public class AutorController {
 
     //@RequestMapping(method = RequestMethod.POST) outra forma de declarar uma requisição
     @PostMapping
-    public ResponseEntity<UUID> salvar(@RequestBody AutorDTO autor){
-        Autor autorEntidade = autor.mapearParaAutor();
-        Autor autorSalvo = autorService.salvar(autorEntidade);
-        // http://localhost:8080/autores/{id} sendo retornado no header
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(autorSalvo.getId())
-                .toUri();
-        return  ResponseEntity.created(uri).body(autorEntidade.getId());
+    public ResponseEntity<Object> salvar(@RequestBody AutorDTO autor){
+        try {
+
+
+            Autor autorEntidade = autor.mapearParaAutor();
+            Autor autorSalvo = autorService.salvar(autorEntidade);
+            // http://localhost:8080/autores/{id} sendo retornado no header
+            URI uri = ServletUriComponentsBuilder
+                    .fromCurrentRequest()
+                    .path("/{id}")
+                    .buildAndExpand(autorSalvo.getId())
+                    .toUri();
+            return ResponseEntity.created(uri).body(autorEntidade.getId());
+        }catch (RegistroDuplicadoExcepcion excepcion){
+            ErroResposta erroDTO = ErroResposta.conflito(excepcion.getMessage());
+            return ResponseEntity.status(erroDTO.status()).body(erroDTO);
+        }
     }
 
     @GetMapping("{id}")

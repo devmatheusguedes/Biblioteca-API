@@ -3,6 +3,8 @@ package io.github.devmatheusguedes.libraryapi.service;
 import io.github.devmatheusguedes.libraryapi.controller.dto.AutorDTO;
 import io.github.devmatheusguedes.libraryapi.model.Autor;
 import io.github.devmatheusguedes.libraryapi.repository.AutorRepository;
+import io.github.devmatheusguedes.libraryapi.validator.AutorValidador;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,12 +15,15 @@ import java.util.UUID;
 public class AutorService {
 
     private AutorRepository autorRepository;
+    private final AutorValidador validador;
 
-    public AutorService(AutorRepository autorRepository){
+    public AutorService(AutorRepository autorRepository, AutorValidador autorValidador){
         this.autorRepository = autorRepository;
+        this.validador = autorValidador;
     }
 
     public Autor salvar(Autor autor){
+        validador.validar(autor);
         return autorRepository.save(autor);
     }
 
@@ -34,6 +39,7 @@ public class AutorService {
         if (autor.getId() == null){
             throw new IllegalArgumentException("O autor precisa estar cadastrado para atualizar.");
         }
+        validador.validar(autor);
         autorRepository.save(autor);
     }
 
