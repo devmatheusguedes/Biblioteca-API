@@ -4,7 +4,10 @@ import io.github.devmatheusguedes.libraryapi.controller.dto.AutorDTO;
 import io.github.devmatheusguedes.libraryapi.model.Autor;
 import io.github.devmatheusguedes.libraryapi.repository.AutorRepository;
 import io.github.devmatheusguedes.libraryapi.validator.AutorValidador;
+import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,12 +17,12 @@ import java.util.UUID;
 @Service
 public class AutorService {
 
-    private AutorRepository autorRepository;
+    private final AutorRepository autorRepository;
     private final AutorValidador validador;
 
-    public AutorService(AutorRepository autorRepository, AutorValidador autorValidador){
+    public AutorService(AutorRepository autorRepository, AutorValidador validador) {
         this.autorRepository = autorRepository;
-        this.validador = autorValidador;
+        this.validador = validador;
     }
 
     public Autor salvar(Autor autor){
@@ -55,5 +58,20 @@ public class AutorService {
         }
 
         return autorRepository.findAll();
+    }
+
+    public List<Autor> filtarByExample(String nome, String nacionalidade){
+        Autor autor = new Autor();
+        autor.setNome(nome);
+        autor.setNacionalidade(nacionalidade);
+
+        ExampleMatcher matcher = ExampleMatcher
+                .matching()
+                .withIgnoreNullValues() // ignorar campos nulos
+                .withIgnoreCase() // padronizar caracteres caixa alta ou caixa baixa são iguai
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING); // pesquisar por qualquer parte da String no BD
+        Example<Autor> autorExample = Example.of(autor, matcher);
+
+        return autorRepository.findAll(autorExample);
     }
 }
