@@ -2,6 +2,8 @@ package io.github.devmatheusguedes.libraryapi.controller.common;
 
 import io.github.devmatheusguedes.libraryapi.controller.dto.ErroCampo;
 import io.github.devmatheusguedes.libraryapi.controller.dto.ErroResposta;
+import io.github.devmatheusguedes.libraryapi.exepcion.OperacaoNaoPermitidaExeption;
+import io.github.devmatheusguedes.libraryapi.exepcion.RegistroDuplicadoExcepcion;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -28,5 +30,29 @@ public class GlobalExceptionHandler {
 
         return new ErroResposta(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Erro de validação."
                 , listaDeErro);
+    }
+
+    @ExceptionHandler(RegistroDuplicadoExcepcion.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErroResposta handlerRegistroDuplicadoException(RegistroDuplicadoExcepcion e){
+        return ErroResposta.conflito(e.getMessage());
+    }
+
+    // ESSE PRIMEIRO @ É USADO PARA INDICAR A EXCESSÃO A SER TRATADA
+    @ExceptionHandler(OperacaoNaoPermitidaExeption.class)
+    // ESSE SEGUNGO @ É USADO PARA INDICAR O STATUS A SER LANÇADO
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErroResposta handlerOperacaoNaoPermitida
+            (OperacaoNaoPermitidaExeption e){
+        return ErroResposta.RespostaPadrao(e.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErroResposta handleErrosNaoTratados(RuntimeException e){
+        return new ErroResposta(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Ocorreu um erro inesperado. Cotate-nos para resolvermos o problema. " + e.getMessage()
+                , List.of());
     }
 }
