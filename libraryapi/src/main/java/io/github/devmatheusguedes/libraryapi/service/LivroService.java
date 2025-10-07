@@ -13,7 +13,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-
 public class LivroService {
     private final LivroRepository repository;
     private final LivroValidador livroValidador;
