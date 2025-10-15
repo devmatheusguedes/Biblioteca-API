@@ -57,12 +57,12 @@ public class GlobalExceptionHandler {
                         e.getMessage()))
                 );
     }
-//    @ExceptionHandler(RuntimeException.class)
-//    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-//    public ErroResposta handleErrosNaoTratados(RuntimeException e){
-//        return new ErroResposta(
-//                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-//                "Ocorreu um erro inesperado. Cotate-nos para resolvermos o problema. " + e.getMessage()
-//                , List.of());
-//    }
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErroResposta handleErrosNaoTratados(RuntimeException e){
+        return new ErroResposta(
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Ocorreu um erro inesperado. Cotate-nos para resolvermos o problema. " + e.getMessage()
+                , List.of());
+    }
 }

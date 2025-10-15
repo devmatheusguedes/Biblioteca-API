@@ -4,6 +4,9 @@ import io.github.devmatheusguedes.libraryapi.model.GeneroLivro;
 import io.github.devmatheusguedes.libraryapi.model.Livro;
 import io.github.devmatheusguedes.libraryapi.repository.LivroRepository;
 import io.github.devmatheusguedes.libraryapi.validator.LivroValidador;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import static io.github.devmatheusguedes.libraryapi.repository.specs.LivroSpecification.*;
@@ -35,8 +38,12 @@ public class LivroService {
     }
 
     // isbn, titulo, nome autor, genero, ano de publicacao
-    public List<Livro> pesquisa(String isbn, String titulo, String nomeAutor,
-                                GeneroLivro genero, Integer dataPublicacao){
+    public Page<Livro> pesquisa(String isbn, String titulo,
+                                String nomeAutor,
+                                GeneroLivro genero,
+                                Integer dataPublicacao,
+                                Integer pagina,
+                                Integer tamanhoPagina){
 
         // select * from livro where true = true
         Specification<Livro> specs = Specification.where(((root, query, criteriaBuilder) ->
@@ -59,7 +66,9 @@ public class LivroService {
         if (nomeAutor != null){
             specs = specs.and(nomeAutorLike(nomeAutor));
         }
-        return repository.findAll(specs);
+        Pageable pageable = PageRequest.of(pagina, tamanhoPagina);
+
+        return repository.findAll(specs, pageable);
     }
 
     public void atualizar(Livro livro) {

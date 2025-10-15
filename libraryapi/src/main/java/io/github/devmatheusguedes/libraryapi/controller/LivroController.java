@@ -9,6 +9,7 @@ import io.github.devmatheusguedes.libraryapi.model.GeneroLivro;
 import io.github.devmatheusguedes.libraryapi.model.Livro;
 import io.github.devmatheusguedes.libraryapi.service.LivroService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,8 +65,9 @@ public class LivroController implements GenericController{
         return ResponseEntity.noContent().build();
     }
 
+    // retorna uma lista do tipo Page com informações da pagina
     @GetMapping()
-    public ResponseEntity<List<ResultadoPesquisaLivro>> pesquisa(
+    public ResponseEntity<Page<ResultadoPesquisaLivro>> pesquisa(
             @RequestParam(value = "isbn", required = false)
             String isbn,
             @RequestParam(value = "titulo", required = false)
@@ -75,14 +77,16 @@ public class LivroController implements GenericController{
             @RequestParam(value = "genero", required = false)
             GeneroLivro genero,
             @RequestParam(value = "data-publicacao", required = false)
-            Integer dataPublicacao
+            Integer dataPublicacao,
+            @RequestParam(value = "pagina", defaultValue = "0")
+            Integer pagina,
+            @RequestParam(value = "tamanho-pagina", defaultValue = "10")
+            Integer tamanhoPagina
     ){
-        var resultado = service.pesquisa(isbn, titulo, nomeAutor, genero, dataPublicacao);
-        var lista = resultado
-                .stream()
-                .map(mapper::toResultadoPesquisaLivro)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(lista);
+        Page<Livro> resultado = service.pesquisa(isbn, titulo, nomeAutor, genero, dataPublicacao, pagina, tamanhoPagina);
+        Page<ResultadoPesquisaLivro> resultadoPesquisaLivroPage = resultado.map(mapper::toResultadoPesquisaLivro);
+
+        return ResponseEntity.ok(resultadoPesquisaLivroPage);
     }
 
     @PutMapping("{id}")

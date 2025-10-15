@@ -26,3 +26,10 @@ CREATE TABLE livro(
 );
 
 SELECT * FROM autor, livro;
+
+CREATE TABLE usuario{
+    id UUID PRIMARY KEY NOT NULL,
+    login VARCHAR(20) NOT NULL UNIQUE,
+    senha VARCHAR(300) NOT NULL,
+    roles VARCHAR[]
+};
