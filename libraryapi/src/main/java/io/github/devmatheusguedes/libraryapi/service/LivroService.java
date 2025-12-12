@@ -2,7 +2,9 @@ package io.github.devmatheusguedes.libraryapi.service;
 
 import io.github.devmatheusguedes.libraryapi.model.GeneroLivro;
 import io.github.devmatheusguedes.libraryapi.model.Livro;
+import io.github.devmatheusguedes.libraryapi.model.Usuario;
 import io.github.devmatheusguedes.libraryapi.repository.LivroRepository;
+import io.github.devmatheusguedes.libraryapi.security.SecurityService;
 import io.github.devmatheusguedes.libraryapi.validator.LivroValidador;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,7 +13,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import static io.github.devmatheusguedes.libraryapi.repository.specs.LivroSpecification.*;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -19,13 +20,17 @@ import java.util.UUID;
 public class LivroService {
     private final LivroRepository repository;
     private final LivroValidador livroValidador;
-    public LivroService(LivroRepository repository, LivroValidador livroValidador){
+    private final SecurityService securityService;
+    public LivroService(LivroRepository repository, LivroValidador livroValidador, SecurityService securityService){
         this.repository = repository;
         this.livroValidador = livroValidador;
+        this.securityService = securityService;
     }
 
     public Livro salvar(Livro livro) {
         livroValidador.validar(livro);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        livro.setUsuario(usuario);
         return repository.save(livro);
     }
 

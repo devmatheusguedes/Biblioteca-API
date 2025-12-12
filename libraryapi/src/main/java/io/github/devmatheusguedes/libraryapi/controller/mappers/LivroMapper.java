@@ -5,6 +5,7 @@ import io.github.devmatheusguedes.libraryapi.controller.dto.CadastroLivroDTO;
 import io.github.devmatheusguedes.libraryapi.controller.dto.ResultadoPesquisaLivro;
 import io.github.devmatheusguedes.libraryapi.model.Livro;
 import io.github.devmatheusguedes.libraryapi.repository.AutorRepository;
+import io.github.devmatheusguedes.libraryapi.repository.UsuarioRepository;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public abstract class LivroMapper {
     @Autowired
     AutorRepository autorRepository;
+    @Autowired
+    UsuarioRepository usuarioRepository;
     @Autowired
     AutorMapper mapper;
     @Mapping(target = "autor", expression = "java( autorRepository.findById(dto.idAutor()).orElse(null) )")

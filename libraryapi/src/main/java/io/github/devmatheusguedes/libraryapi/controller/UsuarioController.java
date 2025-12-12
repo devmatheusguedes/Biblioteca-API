@@ -4,6 +4,7 @@ import io.github.devmatheusguedes.libraryapi.controller.dto.UsuarioDTO;
 import io.github.devmatheusguedes.libraryapi.controller.mappers.UsuarioMapper;
 import io.github.devmatheusguedes.libraryapi.model.Usuario;
 import io.github.devmatheusguedes.libraryapi.service.UsuarioService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class UsuarioController {
     private final UsuarioService service;
     private final UsuarioMapper mapper;
     @PostMapping
-    public ResponseEntity<Usuario> salvar(@RequestBody UsuarioDTO usuarioDTO){
+    public ResponseEntity<Usuario> salvar(@RequestBody @Valid UsuarioDTO usuarioDTO){
         Usuario usuario = mapper.toEntity(usuarioDTO);
         service.salvar(usuario);
        return ResponseEntity.ok(usuario);

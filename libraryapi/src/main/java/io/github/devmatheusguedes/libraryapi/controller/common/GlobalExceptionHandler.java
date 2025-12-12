@@ -6,6 +6,7 @@ import io.github.devmatheusguedes.libraryapi.exepcion.CampoObrigatorioException;
 import io.github.devmatheusguedes.libraryapi.exepcion.OperacaoNaoPermitidaExeption;
 import io.github.devmatheusguedes.libraryapi.exepcion.RegistroDuplicadoExcepcion;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -56,6 +57,12 @@ public class GlobalExceptionHandler {
                 List.of(new ErroCampo(e.getCampo(),
                         e.getMessage()))
                 );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErroResposta handleAcessDaniedException(AccessDeniedException e){
+        return new ErroResposta(HttpStatus.FORBIDDEN.value(), "Acesso negado", List.of());
     }
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

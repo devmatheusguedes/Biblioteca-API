@@ -27,5 +27,5 @@ public record ResultadoPesquisaLivro(
         AutorDTO autor,
         LocalDateTime dataCadastro,
         LocalDateTime dataAtualizacao,
-        UUID usuario) {
+        UUID idUsuario) {
 }

@@ -1,14 +1,17 @@
 package io.github.devmatheusguedes.libraryapi.config;
 
 import io.github.devmatheusguedes.libraryapi.security.CustomUserDetailsService;
+import io.github.devmatheusguedes.libraryapi.security.LoginSocialSucessHandler;
 import io.github.devmatheusguedes.libraryapi.service.UsuarioService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -19,25 +22,30 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception{
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, LoginSocialSucessHandler sucessHandler) throws Exception{
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
-//                .formLogin(config ->{ aqui é onde pode-se customizar a tela de login
-//        utilizando uma arquivo html dentro do projeto, caso o login seja um sucesso
-////                    config.loginPage("/login.html")
+                .formLogin(config ->{ //aqui é onde pode-se customizar a tela de login
+        //utilizando uma arquivo html dentro do projeto, caso o login seja um sucesso
+                    config.loginPage("/login");
 //                            .successForwardUrl("/home.html");
 //        o metodo sucessformurl chama a pagina de acordo com o indicado no campo url.
-//                })
+                })
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize ->{
                     // a string /autores/** significa que para qualquer url precedida de autores
                     // seja aplicado tal regra.
                     //  a regra a .hasRole("ADMIN") significa que apenas os usuarios com a role admin podem fazer
                     // operações em autores
-                    authorize.requestMatchers("/autores/**").hasRole("ADMIN");
+//                    authorize.requestMatchers("/autores/**").hasRole("ADMIN");
+                    authorize.requestMatchers("/login/**").permitAll();
+                    authorize.requestMatchers("/oauth2/**").permitAll();
+                    authorize.requestMatchers(HttpMethod.POST,"/usuarios/**").permitAll();
+                    authorize.anyRequest().authenticated();
 
                     // nesta parte, você pode restringirapenas algumas operações
                     // que no caso, a operação de salvar esta sendo restringida para apenas
@@ -46,14 +54,16 @@ public class SecurityConfiguration {
 
                     // A regra .hasAnyRole("USER", "ADMIN"); significa que tanto os usuarios quanto
                     // os daministradores podem fazer operações na url de livros
-                    authorize.requestMatchers("/livros/**").hasAnyRole("USER", "ADMIN");
-                    authorize.requestMatchers("/login/**").permitAll();
-                    authorize.requestMatchers(HttpMethod.POST,"/usuarios/**").permitAll();
+//                    authorize.requestMatchers("/livros/**").hasAnyRole("USER", "ADMIN");
                     // a regra .authenticated() signica que, caso a aplicação tenha outras URLs,
                     // essa regra vai se aplicar a todas as que não foi especificado as regras aqui no authorize
                     // fazendo com que elas sejam autorizadas as operações
                     // +++ essa regra tem que ser a ultima regra fornecida +++
-                    authorize.anyRequest().authenticated();
+                })
+                .oauth2Login(oauth2 ->{
+                    oauth2
+                            .loginPage("/login")
+                            .successHandler(sucessHandler);
                 })
                 .build();
     }
@@ -69,7 +79,7 @@ public class SecurityConfiguration {
 
     // criar detalhes de usuarios sem precisar de acesso ao banco de dados, por enquanto
     // este repositorio foi criado para fins de teste
-    @Bean
+    //@Bean
     public UserDetailsService userDetailsService(UsuarioService usuarioService){
 
 //        UserDetails user1 = User
@@ -87,5 +97,9 @@ public class SecurityConfiguration {
 
 
         return new CustomUserDetailsService(usuarioService);
+    }
+    @Bean
+    public GrantedAuthorityDefaults grantedAuthorityDefaults(){
+        return new GrantedAuthorityDefaults("");
     }
 }

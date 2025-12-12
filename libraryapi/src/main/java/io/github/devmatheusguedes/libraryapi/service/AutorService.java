@@ -1,11 +1,12 @@
 package io.github.devmatheusguedes.libraryapi.service;
 
-import io.github.devmatheusguedes.libraryapi.controller.dto.AutorDTO;
 import io.github.devmatheusguedes.libraryapi.model.Autor;
+import io.github.devmatheusguedes.libraryapi.model.Usuario;
 import io.github.devmatheusguedes.libraryapi.repository.AutorRepository;
+import io.github.devmatheusguedes.libraryapi.security.SecurityService;
 import io.github.devmatheusguedes.libraryapi.validator.AutorValidador;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
@@ -19,14 +20,18 @@ public class AutorService {
 
     private final AutorRepository autorRepository;
     private final AutorValidador validador;
+    private final SecurityService securityService;
 
-    public AutorService(AutorRepository autorRepository, AutorValidador validador) {
+    public AutorService(AutorRepository autorRepository, AutorValidador validador, SecurityService securityService) {
         this.autorRepository = autorRepository;
         this.validador = validador;
+        this.securityService = securityService;
     }
 
     public Autor salvar(Autor autor){
         validador.validar(autor);
+        Usuario usuario = securityService.obterUsuarioLogado();
+        autor.setUsuario(usuario);
         return autorRepository.save(autor);
     }
 

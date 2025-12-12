@@ -31,5 +31,24 @@ CREATE TABLE usuario{
     id UUID PRIMARY KEY NOT NULL,
     login VARCHAR(20) NOT NULL UNIQUE,
     senha VARCHAR(300) NOT NULL,
+    email VARCHAR(300) NOT NULL,
     roles VARCHAR[]
 };
+-- edita tabela de usuario adicionando o campo email:
+drop table usuario;
+
+CREATE TABLE usuario (
+    id UUID PRIMARY KEY NOT NULL,
+    login VARCHAR(20) NOT NULL UNIQUE,
+    senha VARCHAR(300) NOT NULL,
+    email VARCHAR(300) NOT NULL,
+    roles VARCHAR[]
+);
+
+CREATE TABLE client(
+	id UUID NOT NULL PRIMARY KEY,
+	client_id VARCHAR(150) NOT NULL,
+	client_secret VARCHAR(400) NOT NULL,
+	redirect_uri VARCHAR(200) not null,
+	scope VARCHAR(50)
+);

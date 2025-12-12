@@ -56,8 +56,9 @@ public class Livro {
     @LastModifiedDate
     private LocalDateTime dataAtualizacao;
 
-    @Column(name="id_usuario")
-    private UUID usuario;
+    @ManyToOne
+    @JoinColumn(name="id_usuario")
+    private Usuario usuario;
     public UUID getId() {
         return id;
     }
@@ -130,11 +131,11 @@ public class Livro {
         this.dataAtualizacao = dataAtualizacao;
     }
 
-    public UUID getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(UUID usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 

@@ -1,14 +1,17 @@
 package io.github.devmatheusguedes.libraryapi.controller;
 
 import io.github.devmatheusguedes.libraryapi.controller.dto.AutorDTO;
-import io.github.devmatheusguedes.libraryapi.controller.dto.ErroResposta;
 import io.github.devmatheusguedes.libraryapi.controller.mappers.AutorMapper;
-import io.github.devmatheusguedes.libraryapi.exepcion.RegistroDuplicadoExcepcion;
 import io.github.devmatheusguedes.libraryapi.model.Autor;
+import io.github.devmatheusguedes.libraryapi.model.Usuario;
 import io.github.devmatheusguedes.libraryapi.service.AutorService;
+import io.github.devmatheusguedes.libraryapi.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -28,17 +31,23 @@ public class AutorController implements GenericController {
     @Autowired
     private final AutorMapper mapper;
 
+    @Autowired
+    private final UsuarioService usuarioService;
 
-    public AutorController(AutorService autorService, AutorMapper mapper) {
+
+    public AutorController(AutorService autorService, AutorMapper mapper, UsuarioService usuarioService) {
         this.autorService = autorService;
         this.mapper = mapper;
 
+        this.usuarioService = usuarioService;
     }
 
     //@RequestMapping(method = RequestMethod.POST) outra forma de declarar uma requisição
     @PostMapping
-    public ResponseEntity<Void> salvar(@RequestBody @Valid AutorDTO dto) {
-
+    @PreAuthorize("hasAnyRole('GERENTE')")
+    public ResponseEntity<Void> salvar(@RequestBody @Valid AutorDTO dto) { // authentication vem do springsecurity
+        // é o objeto retonado do Authentication
+        // comentarios acima não são mais uteis pos fizemos uma classe securityservice para pegarmos o usuario
         Autor autor = mapper.toAutor(dto);
         Autor autorSalvo = autorService.salvar(autor);
         // http://localhost:8080/autores/{id} sendo retornado no header
@@ -47,6 +56,7 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping("{id}")
+    @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")
     public ResponseEntity<AutorDTO> obterDetalhes(@PathVariable("id") String id) {
         var idAutor = UUID.fromString(id);
         return autorService
@@ -58,6 +68,7 @@ public class AutorController implements GenericController {
     }
 
     @DeleteMapping("{id}")
+    @PreAuthorize("hasAnyRole('GERENTE')")
     public ResponseEntity<Void> deletar(@PathVariable("id") String id) {
         UUID idAutor = UUID.fromString(id);
         Optional<Autor> autorOptional = autorService.obterPorId(idAutor);
@@ -69,6 +80,7 @@ public class AutorController implements GenericController {
     }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('GERENTE')")
     public ResponseEntity<List<AutorDTO>> filtrar(
             @RequestParam(value = "nome", required = false) String nome,
             @RequestParam(value = "nacionalidade", required = false) String nacionalidade) {
@@ -81,6 +93,7 @@ public class AutorController implements GenericController {
     }
 
     @PutMapping("{id}")
+    @PreAuthorize("hasAnyRole('GERENTE')")
     public ResponseEntity<Void> atualizar(
             @PathVariable String id, @RequestBody @Valid AutorDTO autorDTO) {
 

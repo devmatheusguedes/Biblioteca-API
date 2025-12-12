@@ -1,18 +1,34 @@
 spring:
   application:
     name: libraryapi
+
   datasource:
     url: jdbc:postgresql://127.0.0.1:25432/library
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
-  main:
-    allow-bean-definition-overriding: true
-    # não é recomendado usar o ddl na aplicação comercial
+
   jpa:
     show-sql: true
     hibernate:
-#      ddl-auto: update  # gerar as tabelas automaticamente ou atualizar
-      ddl-auto: none  # não gerar as tabelas automaticamente
+      ddl-auto: none
     properties:
       hibernate.format_sql: true
+
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: sub
